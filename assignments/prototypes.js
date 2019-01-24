@@ -15,6 +15,17 @@
   * destroy() // prototype method -> returns the string: 'Object was removed from the game.'
 */
 
+// constructor function: to build objects
+function GameObject(attributes){
+  this.createdAt = attributes.createdAt;
+  this.dimensions = attributes.dimensions;
+}
+
+GameObject.prototype.destroy = function() {
+  console.log(`Object was removed from the game`)
+}
+  
+
 /*
   === CharacterStats ===
   * healthPoints
@@ -22,6 +33,21 @@
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+
+function CharacterStats(characterattributes){
+  //This binds the "this" keyword to GameObject
+  GameObject.call(this, characterattributes);
+  this.healthPoints = characterattributes.healthPoints;
+  this.name = characterattributes.name;
+}
+
+// this sets up the __proto__ and allows us to use methods now across objects (destroy)
+CharacterStats.prototype = Object.create(GameObject.prototype);
+
+CharacterStats.prototype.takeDamage = function () {
+  return `${this.name} took damage`;
+}
+
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -32,7 +58,48 @@
   * should inherit destroy() from GameObject through CharacterStats
   * should inherit takeDamage() from CharacterStats
 */
- 
+
+function Humanoid(humanAttributes) {
+  CharacterStats.call(this, humanAttributes);
+  this.team = humanAttributes.team;
+  this.weapons = humanAttributes.weapons;
+  this.damage = humanAttributes.damage;
+  this.language = humanAttributes.language;
+}
+Humanoid.prototype = Object.create(CharacterStats.prototype);
+Humanoid.prototype.greet = function () {
+  return `${this.name} offers a greeting in ${this.language}`;
+}
+Humanoid.prototype.attack = function (objectToAttack) {
+  if (objectToAttack.healthPoints <= 0) {
+    objectToAttack.destroy();
+    console.log(`${objectToAttack.name} has been destroyed`);
+  } else {
+    objectToAttack.healthPoints -= this.damage;
+    console.log(`
+    ${this.name} attacked ${objectToAttack.name} for ${this.damage}\n
+    ${objectToAttack.name} is now at ${objectToAttack.healthPoints} Health Points`);
+  }
+}
+//Incomplete functionality
+Humanoid.prototype.isAlive = function () {
+  if(this.healthPoints > 0){
+    this.alive = true;
+  }else{
+    this.alive = false;
+    console.log(`${this.name} has been defeated!`)
+  }
+}
+
+Humanoid.prototype.printStatistics = function () {
+  console.log(`
+  ===${this.name}=== \n
+  Current Health: ${this.healthPoints} \n
+  Weapons Available: ${this.weapons}
+  ==================
+  `)
+}
+
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
   * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
@@ -41,7 +108,7 @@
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,7 +169,6 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
