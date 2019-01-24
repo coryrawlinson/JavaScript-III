@@ -117,12 +117,12 @@ Humanoid.prototype.printStatistics = function () {
       height: 1,
     },
     healthPoints: 5,
-    name: 'Bruce',
-    team: 'Mage Guild',
+    name: 'Kento Rei Fang',
+    team: 'Mage Warrior',
     weapons: [
-      'Staff of Shamalama',
+      'Staff',
     ],
-    language: 'Common Tongue',
+    language: 'Anime J',
   });
 
   const swordsman = new Humanoid({
@@ -133,13 +133,13 @@ Humanoid.prototype.printStatistics = function () {
       height: 2,
     },
     healthPoints: 15,
-    name: 'Sir Mustachio',
-    team: 'The Round Table',
+    name: 'Sage Date',
+    team: 'Ancient Warriors',
     weapons: [
       'Giant Sword',
       'Shield',
     ],
-    language: 'Common Tongue',
+    language: 'Anime J',
   });
 
   const archer = new Humanoid({
@@ -150,27 +150,114 @@ Humanoid.prototype.printStatistics = function () {
       height: 4,
     },
     healthPoints: 10,
-    name: 'Lilith',
-    team: 'Forest Kingdom',
+    name: 'Rowen Hashiba',
+    team: 'Ronin Warriors',
     weapons: [
       'Bow',
       'Dagger',
     ],
-    language: 'Elvish',
+    language: 'Ancient Japanese',
   });
 
   console.log(mage.createdAt); // Today's date
   console.log(archer.dimensions); // { length: 1, width: 2, height: 4 }
   console.log(swordsman.healthPoints); // 15
-  console.log(mage.name); // Bruce
-  console.log(swordsman.team); // The Round Table
-  console.log(mage.weapons); // Staff of Shamalama
-  console.log(archer.language); // Elvish
-  console.log(archer.greet()); // Lilith offers a greeting in Elvish.
-  console.log(mage.takeDamage()); // Bruce took damage.
-  console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
+  console.log(mage.name); // Kento Rei Fang
+  console.log(swordsman.team); // Ancient Warriors
+  console.log(mage.weapons); // Staff
+  console.log(archer.language); // Ancient Japanese
+  console.log(archer.greet()); // Rowen Hashiba offers a greeting in Ancient Japanese.
+  console.log(mage.takeDamage()); // Kento Rei Fang took damage.
+  console.log(swordsman.destroy()); // Sage Date was removed from the game.
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function hero(heroattributes) {
+    //This binds the "this" keyword to CharacterStats
+    Humanoid.call(this, heroattributes);
+    this.heropower = heroattributes.heropower;
+  }
+  
+  // this sets up the __proto__ and allows us to use methods now across objects (destroy & takeDamage)
+  hero.prototype = Object.create(Humanoid.prototype);
+  
+  hero.prototype.discover = function () {
+    return (`${this.name} discovers ${this.heropower}.`)
+  }
+  
+  hero.prototype.heal = function (character, hpheal) {
+    console.log(`${this.name} has healed ${character.name}!. ${character.name}! gains ${hpheal} points.`);
+    character.hp = character.hp + hpheal;
+    return (character.hp);
+  }
+  
+  const FlameWarrior = new hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 5,
+    },
+    hp: 20,
+    name: 'Ryo Sanada',
+    faction: 'Ronin Warriors',
+    weapons: [
+      'Sword',
+      'White Blaze',
+    ],
+    language: 'Japanese',
+  });
+  
+  console.log(FlameWarrior.heal(swordsman, 5));
+  
+  function villain(villainattributes) {
+    //This binds the "this" keyword to CharacterStats
+    Humanoid.call(this, villainattributes);
+    this.defend = villainattributes.defend;
+  }
+  
+  // this sets up the __proto__ and allows us to use methods now across objects (destroy & takeDamage)
+  villain.prototype = Object.create(Humanoid.prototype);
+  
+  villain.prototype.taunt = function () {
+    return (`Loser, your powers are too weak to defeat ${this.name}!`)
+  }
+  
+  villain.prototype.curse = function(character, hpcurse) {
+    character.hp = character.hp - hpcurse;
+    if (character.hp <= 0) {
+      console.log(`${this.name} has cursed ${character.name}!. ${character.name}! loses ${hpcurse} points.`);
+      console.log(character.destroy()); 
+      return (character.hp);
+    }
+    else {
+      console.log(`${this.name} has cursed ${character.name}!. ${character.name}! loses ${hpcurse} points.`);
+       return (character.hp);
+    }
+  }
+  
+  const Talpa = new villain({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 3,
+    },
+    hp: 20,
+    name: 'Talpa, The Dark Emperor',
+    faction: 'Nether Realm',
+    weapons: [
+      'Double-Edged Swords',
+      'Dark Warlords',
+    ],
+    language: 'Ancient',
+  });
+  
+  console.log(Talpa.curse(mage, 25));
+  
+  console.log(FlameWarrior.heal(swordsman, 5));
+  
+  
